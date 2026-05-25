@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "8081:80"
+    volumes:
+      - .:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+      - db
+    networks:
+      - toshiro-net
+
+  php:
+    build: .
+    image: meu-php-personalizado:latest
+    volumes:
+      - .:/usr/share/nginx/html
+    networks:
+      - toshiro-net
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: "Senha123"
+      MYSQL_DATABASE: "meubanco"
+    volumes:
+      - ./banco.sql:/docker-entrypoint-initdb.d/banco.sql
+    networks:
+      - toshiro-net
+
+networks:
+  toshiro-net:
+    driver: overlay
+
+
+
